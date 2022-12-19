@@ -4,4 +4,4 @@
 sudo apt-get update
 
 # install nfs client
-apt-get -y install nfs-common cifs-utils
+sudo apt-get -y install nfs-common cifs-utils
