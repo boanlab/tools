@@ -23,7 +23,7 @@ if [ "$RELEASE" == "impish" ]; then
     RELEASE="focal"
 fi
 sudo apt-get install -y software-properties-common
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $RELEASE stable"
+sudo add-apt-repository "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $RELEASE stable"
 
 # update the Docker repo
 sudo apt-get update
