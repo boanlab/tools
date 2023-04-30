@@ -12,18 +12,15 @@ sudo apt-get update
 
 # add GPG key
 sudo apt-get install -y curl ca-certificates gnupg
-# curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo install -m 0755 -d /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 sudo chmod a+r /etc/apt/keyrings/docker.gpg
 
 # add Docker repository
-RELEASE=$(lsb_release -cs)
-if [ "$RELEASE" == "impish" ]; then
-    RELEASE="focal"
-fi
-sudo apt-get install -y software-properties-common
-sudo add-apt-repository "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $RELEASE stable"
+echo \
+  "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 # update the Docker repo
 sudo apt-get update
