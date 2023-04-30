@@ -13,9 +13,9 @@ if [ ! -x "$(command -v vboxmanage)" ]; then
     wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add -
     sudo add-apt-repository "deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib"
     sudo apt-get update
-    sudo apt-get -y install virtualbox-6.1
+    sudo apt-get -y install virtualbox
 else
-    echo "Found VirtualBox, skipping the installation"
+    echo "Found VirtualBox, skipping the installation of Virtualbox"
 fi
 
 if [ ! -x "$(command -v vagrant)" ]; then
@@ -24,7 +24,7 @@ if [ ! -x "$(command -v vagrant)" ]; then
     echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
     sudo apt update && sudo apt install vagrant
 else
-    echo "Found Vagrant, skipping the installation"
+    echo "Found Vagrant, skipping the installation of Vagrant"
 fi
 
 # install vagrant plugins

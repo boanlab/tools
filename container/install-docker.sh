@@ -34,6 +34,8 @@ case "$VERSION" in
     sudo apt-get install -y docker-ce=5:18.09.1~3-0~ubuntu-bionic docker-ce-cli=5:18.09.1~3-0~ubuntu-bionic;;
 "20.04"*)
     sudo apt-get install -y docker-ce=5:19.03.9~3-0~ubuntu-focal;;
+"22.04"*)
+    sudo apt-get install -y docker-ce=5:20.10.13~3-0~ubuntu-jammy;;
 *)
     sudo apt-get install -y docker-ce;;
 esac
