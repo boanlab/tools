@@ -57,7 +57,8 @@ elif [ "$CNI" == "weave" ]; then
     kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kubever"
 elif [ "$CNI" == "calico" ]; then
     # install a pod network (calico)
-    kubectl apply -f https://projectcalico.docs.tigera.io/manifests/calico.yaml
+    kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/tigera-operator.yaml
+    kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/custom-resources.yaml
 elif [ "$CNI" == "cilium" ]; then
     # install a pod network (cilium)
     curl -L --remote-name-all https://github.com/cilium/cilium-cli/releases/latest/download/cilium-linux-amd64.tar.gz{,.sha256sum}
@@ -67,7 +68,7 @@ elif [ "$CNI" == "cilium" ]; then
     /usr/local/bin/cilium install
 fi
 
-if [ "$MASTER" == "true" ]; then
+if [ "$MASTER" != "false" ]; then
     # disable master isolation (due to the lack of resources)
     kubectl taint nodes --all node-role.kubernetes.io/master-
 fi
