@@ -12,8 +12,8 @@ sudo apt-get update
 
 # instsall golang
 goBinary=$(curl -s https://go.dev/dl/ | grep linux | head -n 1 | cut -d'"' -f4 | cut -d"/" -f3)
-wget --quiet https://dl.google.com/go/$goBinary -O /tmp/$goBinary
-sudo tar -C /usr/local -xzf /tmp/$goBinary
+wget https://dl.google.com/go/$goBinary -O /tmp/$goBinary
+sudo tar -C /usr/local -xvzf /tmp/$goBinary
 rm /tmp/$goBinary
 
 # add GOPATH, GOROOT
