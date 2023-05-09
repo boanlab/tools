@@ -2,7 +2,7 @@
 
 # set default
 if [ "$CNI" == "" ]; then
-    CNI=cilium
+    CNI=calico
 fi
 
 # use docker as default CRI
@@ -19,7 +19,13 @@ fi
 
 # check supported CNI
 if [ "$CNI" != "flannel" ] && [ "$CNI" != "weave" ] && [ "$CNI" != "calico" ] && [ "$CNI" != "cilium" ]; then
-    echo "Usage: CNI={flannel|weave|calico|cilium} CRI_SOCKET=unix:///path/to/socket_file MASTER={true|false} $0"
+    echo "Usage: CNI={flannel|weave|calico|cilium} CRI_SOCKET=unix:///path/to/socket_file MULTI={true|false} $0"
+    exit
+fi
+
+# check if k8s_init.log exists
+if [ -f ~/k8s_init.log ]; then
+    echo "Already tried to initialize kubeadm"
     exit
 fi
 
@@ -35,10 +41,12 @@ sudo bash -c "echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables"
 sudo bash -c "echo 'net.bridge.bridge-nf-call-iptables=1' >> /etc/sysctl.conf"
 
 # initialize the master node
-if [ "$CNI" == "calico" ]; then
-    sudo kubeadm init --cri-socket=$CRI_SOCKET --pod-network-cidr=192.168.0.0/16 | tee -a ~/k8s_init.log
-else # weave, flannel, cilium
-    sudo kubeadm init --cri-socket=$CRI_SOCKET --pod-network-cidr=10.244.0.0/16 | tee -a ~/k8s_init.log
+sudo kubeadm init --cri-socket=$CRI_SOCKET --pod-network-cidr=10.244.0.0/16 | tee -a ~/k8s_init.log
+
+# stop if kubeadm fails
+if [ $? != 0 ]; then
+    echo "Failed to initialize kubeadm"
+    exit
 fi
 
 # make kubectl work for non-root user
@@ -48,27 +56,25 @@ sudo chown $USER:$USER $HOME/.kube/config
 export KUBECONFIG=$HOME/.kube/config
 echo "export KUBECONFIG=$HOME/.kube/config" | tee -a ~/.bashrc
 
+if [ "$MULTI" != "true" ]; then
+    # disable master isolation (due to the lack of resources)
+    kubectl taint nodes --all node-role.kubernetes.io/master-
+fi
+
 if [ "$CNI" == "flannel" ]; then
     # install a pod network (flannel)
-    kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/v0.17.0/Documentation/kube-flannel.yml
+    kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
 elif [ "$CNI" == "weave" ]; then
     # install a pod network (weave)
-    export kubever=$(kubectl version | base64 | tr -d '\n')
-    kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kubever"
+    kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
 elif [ "$CNI" == "calico" ]; then
     # install a pod network (calico)
     kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/tigera-operator.yaml
     kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/custom-resources.yaml
 elif [ "$CNI" == "cilium" ]; then
     # install a pod network (cilium)
-    curl -L --remote-name-all https://github.com/cilium/cilium-cli/releases/latest/download/cilium-linux-amd64.tar.gz{,.sha256sum}
-    sha256sum --check cilium-linux-amd64.tar.gz.sha256sum
+    curl -LO https://github.com/cilium/cilium-cli/releases/latest/download/cilium-linux-amd64.tar.gz
     sudo tar xzvfC cilium-linux-amd64.tar.gz /usr/local/bin
-    rm cilium-linux-amd64.tar.gz{,.sha256sum}
+    rm cilium-linux-amd64.tar.gz
     /usr/local/bin/cilium install
-fi
-
-if [ "$MASTER" != "false" ]; then
-    # disable master isolation (due to the lack of resources)
-    kubectl taint nodes --all node-role.kubernetes.io/master-
 fi
