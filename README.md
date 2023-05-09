@@ -1,10 +1,14 @@
 # Tools
 
-- upgrade-ubuntu.sh
-- install-net-tools.sh
-- install-nfs-client.sh
-- install-vagrant.sh
-- set-cpu-mode.sh
+- Ubuntu
+    - upgrade-ubuntu.sh
+    - install-net-tools.sh
+    - install-nfs-client.sh
+    - install-virtualbox-vagrant.sh
+    - install-ubuntu-desktop.sh
+    - install-xrdp.sh
+    - install-chrome.sh
+    - install-hangul.sh
 
 - language
     - install-c.sh
@@ -16,9 +20,10 @@
     - install-containerd.sh
 
 - kubernetes
-    - install-kubeadm.sh
-    - initialize-kubeadm.sh
     - install-minikube.sh
     - install-microk8s.sh
-    - install-k3s.sh
+    - install-kubeadm.sh
+    - CNI={flannel|weave|calico|cilium} MULTI={true|false} initialize-kubeadm.sh
+    - CNI={flannel|weave|calico|cilium} install-k3s.sh
+    - CNI={flannel|weave|calico|cilium} install-cni.sh
 
