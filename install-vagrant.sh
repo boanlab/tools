@@ -13,7 +13,7 @@ if [ ! -x "$(command -v vboxmanage)" ]; then
     curl https://www.virtualbox.org/download/oracle_vbox.asc | sudo gpg --dearmor -o /usr/share/keyrings/oracle_vbox.gpg
 
     # add virtualbox repository
-    echo "deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian $(lsb_release -sc) contrib" | sudo tee /etc/apt/sources.list.d/virtualbox.list
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle_vbox_2016.gpg] http://download.virtualbox.org/virtualbox/debian $(lsb_release -sc) contrib" | sudo tee /etc/apt/sources.list.d/virtualbox.list
 
     # install virtualbox
     sudo apt-get update
