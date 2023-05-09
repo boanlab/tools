@@ -10,5 +10,5 @@ fi
 # update repo
 sudo apt-get update
 
-# install build-essentials
-sudo apt-get install -y build-essentials
+# install build-essential
+sudo apt-get install -y build-essential
