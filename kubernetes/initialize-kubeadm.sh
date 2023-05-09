@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# set default
-if [ "$CNI" == "" ]; then
-    CNI=calico
-fi
-
 # use docker as default CRI
 if [ "$CRI_SOCKET" == "" ]; then
     # if docker, let kubeadm figure it out
@@ -14,12 +9,15 @@ if [ "$CRI_SOCKET" == "" ]; then
         CRI_SOCKET=unix:///var/run/containerd/containerd.sock
     elif [ -S /var/run/crio/crio.sock ]; then
         CRI_SOCKET=unix:///var/run/crio/crio.sock
+    else
+        echo "Usage: CNI={flannel|weave|calico|cilium} CRI_SOCKET=unix:///path/to/socket_file MULTI={true|false} $0"
+        exit
     fi
 fi
 
 # check supported CNI
 if [ "$CNI" != "flannel" ] && [ "$CNI" != "weave" ] && [ "$CNI" != "calico" ] && [ "$CNI" != "cilium" ]; then
-    echo "Usage: CNI={flannel|weave|calico|cilium} CRI_SOCKET=unix:///path/to/socket_file MULTI={true|false} $0"
+    echo "Usage: CNI={flannel|weave|calico|cilium} (MULTI=true) $0"
     exit
 fi
 
@@ -70,7 +68,7 @@ elif [ "$CNI" == "weave" ]; then
 elif [ "$CNI" == "calico" ]; then
     # install a pod network (calico)
     kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/tigera-operator.yaml
-    kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/custom-resources.yaml
+    curl -s https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/custom-resources.yaml | sed 's/192.168/10.244/g' | kubectl create -f -
 elif [ "$CNI" == "cilium" ]; then
     # install a pod network (cilium)
     curl -LO https://github.com/cilium/cilium-cli/releases/latest/download/cilium-linux-amd64.tar.gz
