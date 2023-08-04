@@ -16,6 +16,13 @@ fi
 sudo swapoff -a
 sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 
+# enable br_netfilter
+sudo modprobe br_netfilter
+if [ $(cat /proc/sys/net/bridge/bridge-nf-call-iptables) == 0 ]; then
+    sudo bash -c "echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables"
+    sudo bash -c "echo 'net.bridge.bridge-nf-call-iptables=1' >> /etc/sysctl.conf"
+fi
+
 # initialize the master node
 sudo kubeadm init --pod-network-cidr=10.244.0.0/16 | tee -a ~/k8s_init.log
 if [ $? != 0 ]; then
