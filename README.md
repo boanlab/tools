@@ -10,12 +10,12 @@
     - install-chrome.sh
     - install-hangul.sh
 
-- language
+- languages
     - install-c.sh
     - install-java.sh
     - install-golang.sh
 
-- container
+- containers
     - install-docker.sh
     - install-containerd.sh
 

@@ -3,6 +3,8 @@
 if [ "$RUNTIME" == "" ]; then
     if [ -S /var/run/docker.sock ]; then
         RUNTIME="docker"
+    if [ -S /var/run/cri-dockerd.sock ]; then
+	RUNTIME="cri-docker"
     elif [ -S /var/run/crio/crio.sock ]; then
         RUNTIME="crio"
     else # default
@@ -26,14 +28,16 @@ echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://a
 sudo apt-get update
 
 # install kubernetes
-if [ "$RUNTIME" == "containerd" ]; then
-    sudo apt-get install -y kubeadm kubelet kubectl
-else # docker
+if [ "$RUNTIME" == "docker" ]; then
+    # install a specific version (v1.23.0)
     sudo apt-get install -y kubeadm=1.23.0-00 kubelet=1.23.0-00 kubectl=1.23.0-00
-fi
 
-# exclude kubernetes packages from updates
-sudo apt-mark hold kubeadm kubelet kubectl
+    # exclude kubernetes packages from updates
+    sudo apt-mark hold kubeadm kubelet kubectl
+else # otherwise
+    # install the latest version
+    sudo apt-get install -y kubeadm kubelet kubectl
+fi
 
 # mount bpffs (for cilium)
 echo "bpffs                                     /sys/fs/bpf     bpf     defaults          0       0" | sudo tee -a /etc/fstab
@@ -45,5 +49,7 @@ if [ $(cat /proc/sys/net/ipv4/ip_forward) == 0 ]; then
 fi
 
 # disable rp_filter
-sudo bash -c "echo 'net.ipv4.conf.all.rp_filter = 0' > /etc/sysctl.d/99-override_cilium_rp_filter.conf"
-sudo systemctl restart systemd-sysctl
+if [ ! -f /etc/sysctl.d/99-override_cilium_rp_filter.conf ]; then
+    sudo bash -c "echo 'net.ipv4.conf.all.rp_filter = 0' > /etc/sysctl.d/99-override_cilium_rp_filter.conf"
+    sudo systemctl restart systemd-sysctl
+fi
