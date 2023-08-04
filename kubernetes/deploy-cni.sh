@@ -28,4 +28,9 @@ elif [ "$CNI" == "cilium" ]; then
     sudo tar xzvfC cilium-linux-amd64.tar.gz /usr/local/bin
     rm cilium-linux-amd64.tar.gz
     /usr/local/bin/cilium install
+
+    # wait for a while
+    sleep 5
+
+    /usr/local/bin/cilium status
 fi
