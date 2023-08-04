@@ -48,6 +48,13 @@ if [ $(cat /proc/sys/net/ipv4/ip_forward) == 0 ]; then
     sudo bash -c "echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf"
 fi
 
+# enable br_netfilter
+if [ $(grep net.bridge.bridge-nf-call-iptables /etc/sysctl.conf | wc -l) == 0 ]; then
+    sudo modprobe br_netfilter
+    sudo bash -c "echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables"
+    sudo bash -c "echo 'net.bridge.bridge-nf-call-iptables=1' >> /etc/sysctl.conf"
+fi
+
 # disable rp_filter
 if [ ! -f /etc/sysctl.d/99-override_cilium_rp_filter.conf ]; then
     sudo bash -c "echo 'net.ipv4.conf.all.rp_filter = 0' > /etc/sysctl.d/99-override_cilium_rp_filter.conf"
