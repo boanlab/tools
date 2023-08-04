@@ -7,8 +7,17 @@ if [ "$RUNTIME" == "" ]; then
 	RUNTIME="cri-docker"
     elif [ -S /var/run/crio/crio.sock ]; then
         RUNTIME="crio"
+    elif [ -S /var/run/containerd/containerd.sock ]; then
+	RUNTIME="containerd"
     else # default
-        RUNTIME="containerd"
+	echo "Container Runtime is not detected."
+	echo
+	echo "To install Containerd, run '../containers/install-containerd.sh'."
+	echo "To install Docker, run '../containers/install-docker.sh'."
+	echo
+	echo "Note that Kubernetes v1.23.0 would be installed if Docker is installed."
+	echo "Otherwise, the latest version of Kubernetes would be installed."
+	exit
     fi
 fi
 
@@ -61,3 +70,5 @@ if [ ! -f /etc/sysctl.d/99-override_cilium_rp_filter.conf ]; then
     sudo systemctl restart systemd-sysctl
 fi
 
+echo ">> Next Step <<"
+echo "To initialize Kubernetes, run 'MULTI={true|false} ./initialize-kubeadm.sh"
