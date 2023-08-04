@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # check if planning to use multi nodes
-if [ "$MULTI" == "true" ] && [ "$MULTI" != "false" ]; then
+if [ "$MULTI" != "true" ] && [ "$MULTI" != "false" ]; then
     echo "Usage: MULTI={true|false} $0"
     exit
 fi
@@ -16,7 +16,7 @@ fi
 sudo swapoff -a
 
 # activate br_netfilter
-if [ $(grep /etc/sysctl.conf net.bridge.bridge-nf-call-iptables | wc -l) == 0 ]; then
+if [ $(grep net.bridge.bridge-nf-call-iptables /etc/sysctl.conf | wc -l) == 0 ]; then
     sudo modprobe br_netfilter
     sudo bash -c "echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables"
     sudo bash -c "echo 'net.bridge.bridge-nf-call-iptables=1' >> /etc/sysctl.conf"

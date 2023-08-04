@@ -3,7 +3,7 @@
 if [ "$RUNTIME" == "" ]; then
     if [ -S /var/run/docker.sock ]; then
         RUNTIME="docker"
-    if [ -S /var/run/cri-dockerd.sock ]; then
+    elif [ -S /var/run/cri-dockerd.sock ]; then
 	RUNTIME="cri-docker"
     elif [ -S /var/run/crio/crio.sock ]; then
         RUNTIME="crio"
@@ -53,3 +53,4 @@ if [ ! -f /etc/sysctl.d/99-override_cilium_rp_filter.conf ]; then
     sudo bash -c "echo 'net.ipv4.conf.all.rp_filter = 0' > /etc/sysctl.d/99-override_cilium_rp_filter.conf"
     sudo systemctl restart systemd-sysctl
 fi
+
