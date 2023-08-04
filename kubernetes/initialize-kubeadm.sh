@@ -43,3 +43,5 @@ fi
 if [ "$MULTI" != "true" ]; then
     kubectl taint nodes --all node-role.kubernetes.io/master-
 fi
+
+# sudo kubeadm token create --print-join-command
