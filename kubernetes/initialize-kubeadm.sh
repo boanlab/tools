@@ -14,6 +14,7 @@ fi
 
 # turn off swap
 sudo swapoff -a
+sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 
 # activate br_netfilter
 if [ $(grep net.bridge.bridge-nf-call-iptables /etc/sysctl.conf | wc -l) == 0 ]; then
