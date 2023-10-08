@@ -25,6 +25,9 @@ mkdir -p $HOME/.kube
 sudo microk8s kubectl config view --raw | sudo tee $HOME/.kube/config
 sudo chown -R $USER: $HOME/.kube/
 
+# install curl
+sudo apt-get install -y curl
+
 # download the latest kubectl
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 

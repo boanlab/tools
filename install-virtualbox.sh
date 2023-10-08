@@ -8,16 +8,15 @@ if [ "$NAME" != "Ubuntu" ]; then
 fi
 
 if [ ! -x "$(command -v vboxmanage)" ]; then
-    # install repository keys
-    wget -O- https://www.virtualbox.org/download/oracle_vbox_2016.asc | sudo gpg --dearmor -o /usr/share/keyrings/oracle_vbox_2016.gpg
-    curl https://www.virtualbox.org/download/oracle_vbox.asc | sudo gpg --dearmor -o /usr/share/keyrings/oracle_vbox.gpg
+    # install wget
+    sudo apt-get -y install wget
 
-    # add virtualbox repository
-    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle_vbox_2016.gpg] http://download.virtualbox.org/virtualbox/debian $(lsb_release -sc) contrib" | sudo tee /etc/apt/sources.list.d/virtualbox.list
+    # download oracle_vbox_2016.asc and register it to the system
+    wget -O- https://www.virtualbox.org/download/oracle_vbox_2016.asc | sudo gpg --dearmor --yes --output /usr/share/keyrings/oracle-virtualbox-2016.gpg
 
-    # install virtualbox
+    # install vbox
     sudo apt-get update
-    sudo apt-get -y install virtualbox
+    sudo apt-get install virtualbox-6.1
 
     echo "Please reboot the machine."
 else

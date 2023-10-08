@@ -10,6 +10,9 @@ fi
 # update repo
 sudo apt-get update
 
+# install wget
+sudo apt -y install wget
+
 # instsall golang
 goBinary=$(curl -s https://go.dev/dl/ | grep linux | head -n 1 | cut -d'"' -f4 | cut -d"/" -f3)
 wget https://dl.google.com/go/$goBinary -O /tmp/$goBinary

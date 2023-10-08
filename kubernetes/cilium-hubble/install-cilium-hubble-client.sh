@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# install curl
+sudo apt-get install -y curl
+
 HUBBLE_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/hubble/master/stable.txt)
 HUBBLE_ARCH=amd64 # by default
 if [ "$(uname -m)" = "aarch64" ]; then

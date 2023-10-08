@@ -7,6 +7,9 @@ if [ "$NAME" != "Ubuntu" ]; then
     exit
 fi
 
+# install curl
+sudo apt-get install -y curl
+
 # download the latest minikube package
 curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
 

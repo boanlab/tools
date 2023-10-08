@@ -10,8 +10,11 @@ fi
 # update repo
 sudo apt-get update
 
+# install curl
+sudo apt-get install -y curl
+
 # add GPG key
-sudo apt-get install -y curl ca-certificates gnupg
+sudo apt-get install -y ca-certificates gnupg
 sudo install -m 0755 -d /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 sudo chmod a+r /etc/apt/keyrings/docker.gpg

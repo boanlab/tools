@@ -8,15 +8,19 @@ if [ "$NAME" != "Ubuntu" ]; then
 fi
 
 if [ ! -x "$(command -v vagrant)" ]; then
-    # install vagrant key
-    wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+    VAGRANT_VERSION=2.3.0
 
-    # add vagrant repository
-    echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+    # install wget
+    sudo apt-get -y install wget
+
+    # download vagrant package
+    wget https://releases.hashicorp.com/vagrant/$VAGRANT_VERSION/vagrant_$VAGRANT_VERSION-1_amd64.deb
 
     # install vagrant
-    sudo apt update
-    sudo apt install vagrant
+    sudo apt -y install ./vagrant_$VAGRANT_VERSION-1_amd64.deb
+
+    # rm the vagrant package
+    rm vagrant_$VAGRANT_VERSION-1_amd64.deb
 else
     echo "Found Vagrant, skipping the installation of Vagrant"
 fi

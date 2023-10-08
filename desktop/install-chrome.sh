@@ -13,9 +13,11 @@ sudo apt-get update
 # install wget
 sudo apt-get -y install wget
 
-# install chrome
+# download chrome package
 sudo wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+
+# install chrome
 sudo apt-get -y install ./google-chrome-stable_current_amd64.deb
 
-# remove chrome installer
+# remove chrome package
 sudo rm google-chrome-stable_current_amd64.deb

@@ -3,29 +3,36 @@
 if [ "$RUNTIME" == "" ]; then
     if [ -S /var/run/docker.sock ]; then
         RUNTIME="docker"
+
     elif [ -S /var/run/cri-dockerd.sock ]; then
-	RUNTIME="cri-docker"
+        RUNTIME="cri-docker"
+
     elif [ -S /var/run/crio/crio.sock ]; then
         RUNTIME="crio"
+
     elif [ -S /var/run/containerd/containerd.sock ]; then
-	RUNTIME="containerd"
+        RUNTIME="containerd"
+
     else # default
-	echo "Container Runtime is not detected."
-	echo
-	echo "To install Containerd, run '../containers/install-containerd.sh'."
-	echo "To install Docker, run '../containers/install-docker.sh'."
-	echo
-	echo "Note that Kubernetes v1.23.0 would be installed if Docker is installed."
-	echo "Otherwise, the latest version of Kubernetes would be installed."
-	exit
+        echo "Container Runtime is not detected."
+        echo
+        echo "To install Containerd, run '../containers/install-containerd.sh'."
+        echo "To install Docker, run '../containers/install-docker.sh'."
+        echo
+        echo "Note that Kubernetes v1.23.0 would be installed if Docker is installed."
+        echo "Otherwise, the latest version of Kubernetes would be installed."
+        exit
     fi
 fi
 
 # update repo
 sudo apt-get update
 
+# install curl
+sudo apt-get install -y curl
+
 # install apt-transport-https
-sudo apt-get install -y apt-transport-https ca-certificates curl
+sudo apt-get install -y apt-transport-https ca-certificates
 
 # add the key for kubernetes repo
 sudo curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-archive-keyring.gpg
