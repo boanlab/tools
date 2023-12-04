@@ -20,5 +20,5 @@ if [ ! -x "$(command -v vboxmanage)" ]; then
 
     echo "Please reboot the machine."
 else
-    echo "Found VirtualBox, skipping the installation of Virtualbox"
+    echo "Found VirtualBox, skipping the installation of Virtualbox."
 fi

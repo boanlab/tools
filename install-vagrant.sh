@@ -22,7 +22,7 @@ if [ ! -x "$(command -v vagrant)" ]; then
     # rm the vagrant package
     rm vagrant_$VAGRANT_VERSION-1_amd64.deb
 else
-    echo "Found Vagrant, skipping the installation of Vagrant"
+    echo "Found Vagrant, skipping the installation of Vagrant."
 fi
 
 # install vagrant plugins
