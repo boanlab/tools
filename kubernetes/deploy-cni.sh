@@ -20,17 +20,11 @@ elif [ "$CNI" == "weave" ]; then
     kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
 elif [ "$CNI" == "calico" ]; then
     # install a pod network (calico)
-    kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/tigera-operator.yaml
-    kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/custom-resources.yaml
+    kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.4/manifests/calico.yaml
 elif [ "$CNI" == "cilium" ]; then
     # install a pod network (cilium)
     curl -LO https://github.com/cilium/cilium-cli/releases/latest/download/cilium-linux-amd64.tar.gz
     sudo tar xzvfC cilium-linux-amd64.tar.gz /usr/local/bin
     rm cilium-linux-amd64.tar.gz
     /usr/local/bin/cilium install
-
-    # wait for a while
-    sleep 5
-
-    /usr/local/bin/cilium status
 fi
