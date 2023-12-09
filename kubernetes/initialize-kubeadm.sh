@@ -45,7 +45,7 @@ if [ "$MULTI" != "true" ]; then
     kubectl taint nodes --all node-role.kubernetes.io/master-
 
     # single-node case
-    kubectl taint nodes -–all node-role.kubernetes.io/control-plane-
+    kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 fi
 
 # sudo kubeadm token create --print-join-command
