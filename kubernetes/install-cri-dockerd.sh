@@ -1,5 +1,6 @@
 #!/bin/bash
 
+cd ~
 git clone https://github.com/Mirantis/cri-dockerd.git
 mkdir -p cri-dockerd/bin
 
