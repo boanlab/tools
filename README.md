@@ -4,11 +4,10 @@
     - upgrade-ubuntu.sh
     - install-net-tools.sh
     - install-nfs-client.sh
-    - install-kvm.sh
     - install-virtualbox.sh
     - install-vagrant.sh
+    - install-kvm.sh
     - install-vagrant-libvirt.sh
-    - set-cpu-mode.sh
     - desktop
         - install-xrdp.sh
         - install-ubuntu-desktop.sh
@@ -19,6 +18,7 @@
     - install-gcc.sh
     - install-java.sh
     - install-golang.sh
+    - install-rust.sh
 
 - containers
     - install-docker.sh

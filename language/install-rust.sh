@@ -7,5 +7,9 @@ if [ "$NAME" != "Ubuntu" ]; then
     exit
 fi
 
-# install rust
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+if [ ! -x "$(command -v rust)" ]; then
+    # install rust
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+else
+    echo "Found Rust, skipping the installation of Rust."
+fi

@@ -1,17 +1,11 @@
 #!/bin/bash
 
 if [ "$RUNTIME" == "" ]; then
-    if [ -S /var/run/cri-dockerd.sock ]; then
-        RUNTIME="cri-docker"
+    if [ -S /var/run/containerd/containerd.sock ]; then
+        RUNTIME="containerd"
 
     elif [ -S /var/run/docker.sock ]; then
         RUNTIME="docker"
-
-    elif [ -S /var/run/crio/crio.sock ]; then
-        RUNTIME="crio"
-
-    elif [ -S /var/run/containerd/containerd.sock ]; then
-        RUNTIME="containerd"
 
     else # default
         echo "Container Runtime is not detected."
@@ -78,4 +72,4 @@ if [ ! -f /etc/sysctl.d/99-override_cilium_rp_filter.conf ]; then
 fi
 
 echo ">> Next Step <<"
-echo "To initialize Kubernetes, run 'MULTI={true|false} ./initialize-kubeadm.sh"
+echo "To initialize Kubernetes, run '(MULTI=true) ./initialize-kubeadm.sh"

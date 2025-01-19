@@ -8,23 +8,11 @@ if [ "$NAME" != "Ubuntu" ]; then
 fi
 
 if [ ! -x "$(command -v vagrant)" ]; then
-    VAGRANT_VERSION=2.3.0
-
-    # install wget
-    sudo apt-get -y install wget
-
-    # download vagrant package
-    wget https://releases.hashicorp.com/vagrant/$VAGRANT_VERSION/vagrant_$VAGRANT_VERSION-1_amd64.deb
+    # update repo
+    sudo apt-get update
 
     # install vagrant
-    sudo apt -y install ./vagrant_$VAGRANT_VERSION-1_amd64.deb
-
-    # rm the vagrant package
-    rm vagrant_$VAGRANT_VERSION-1_amd64.deb
+    sudo apt-get install -y vagrant
 else
     echo "Found Vagrant, skipping the installation of Vagrant."
 fi
-
-# install vagrant plugins
-vagrant plugin install vagrant-vbguest
-vagrant plugin install vagrant-reload

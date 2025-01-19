@@ -7,7 +7,14 @@ if [ "$NAME" != "Ubuntu" ]; then
     exit
 fi
 
-# install kvm and dependencies
-sudo apt-get install -y bridge-utils libguestfs-tools \
-                        libvirt-daemon-system libvirt-clients libvirt-daemon libvirt-dev \
-                        qemu-system qemu-kvm virt-manager
+if [ ! -x "$(command -v kvm)" ]; then
+    # update repo
+    sudo apt-get update
+
+    # install kvm and dependencies
+    sudo apt-get install -y bridge-utils libguestfs-tools libvirt-daemon-system \
+                            libvirt-clients libvirt-daemon libvirt-dev \
+                            qemu-system qemu-kvm virt-manager
+else
+    echo "Found KVM, skipping the installation of KVM."
+fi

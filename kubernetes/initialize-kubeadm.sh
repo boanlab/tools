@@ -1,8 +1,10 @@
 #!/bin/bash
 
-# check if planning to use multi nodes
+MULTI="false"
+
+# check if MULTI is correct
 if [ "$MULTI" != "true" ] && [ "$MULTI" != "false" ]; then
-    echo "Usage: MULTI={true|false} $0"
+    echo "Need to use either 'MULTI=true' or 'MULTI=false'"
     exit
 fi
 

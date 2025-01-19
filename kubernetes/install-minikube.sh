@@ -25,3 +25,6 @@ curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stabl
 # install kubectl
 sudo mv kubectl /usr/bin
 sudo chmod 755 /usr/bin/kubectl
+
+# check kubectl
+kubectl cluster-info
