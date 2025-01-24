@@ -53,6 +53,6 @@ fi
 # sudo kubeadm token create --print-join-command
 
 echo ">> Next Step <<"
-echo "To deploy a CNI, run 'CNI={flannel|weave|calico|cilium} ./deploy-cni.sh'."
+echo "To deploy a CNI, run 'CNI={flannel|calico|cilium} ./deploy-cni.sh'."
 echo "If you see the error 'bridge-nf-call-iptables does not exist' when executing 'kubectl join' on worker nodes,"
 echo "you can first run './enable-bridge-nf-call-iptables.sh' on worker nodes to fix this error."
