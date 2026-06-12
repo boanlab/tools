@@ -1,8 +1,10 @@
 #!/bin/bash
 
-. /etc/os-release
+# read os-release in a subshell so it does not clobber $VERSION (the
+# user-supplied Kubernetes version), which /etc/os-release also defines
+OS_NAME=$(. /etc/os-release; echo "$NAME")
 
-if [ "$NAME" != "Ubuntu" ]; then
+if [ "$OS_NAME" != "Ubuntu" ]; then
     echo "This script is for Ubuntu."
     exit
 fi
