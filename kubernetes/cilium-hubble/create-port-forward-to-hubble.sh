@@ -1,7 +1,4 @@
 #!/bin/bash
 
-# create a port forward to the hubble service (local access)
-# cilium hubble port-forward
-
-# create a port forward to the hubble service (remote access)
+# Expose the Hubble UI on port 12000 for remote access.
 kubectl port-forward -n kube-system svc/hubble-ui --address 0.0.0.0 12000:80

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ ! -f /usr/local/bin/helm ]; then
-  ../kubernetes/install-helm.sh
+  ../install-helm.sh
 fi
 
 helm repo add cilium https://helm.cilium.io

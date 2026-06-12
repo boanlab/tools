@@ -16,10 +16,6 @@ sudo apt-get install -y linux-headers-$(uname -r)
 # install microk8s
 sudo snap install microk8s --classic
 
-# check microk8s
-sudo microk8s kubectl get nodes
-sudo microk8s kubectl get services
-
 # copy k8s config
 mkdir -p $HOME/.kube
 sudo microk8s kubectl config view --raw | sudo tee $HOME/.kube/config

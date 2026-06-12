@@ -13,10 +13,14 @@ sudo apt-get update
 # install xrdp and xfce4
 sudo apt-get -y install xrdp xfce4
 
-# set xfce as a session
-sudo sed -i '/Xsession/s/^/#/' /etc/xrdp/startwm.sh
-echo "test -x /usr/bin/startxfce4 && exec /usr/bin/startxfce4" | sudo tee -a /etc/xrdp/startwm.sh
-echo "exec /bin/sh /usr/bin/startxfce4" | sudo tee -a /etc/xrdp/startwm.sh
+# set xfce as a session (idempotent)
+if ! grep -q '^#.*Xsession' /etc/xrdp/startwm.sh; then
+    sudo sed -i '/Xsession/s/^/#/' /etc/xrdp/startwm.sh
+fi
+if ! grep -q 'startxfce4' /etc/xrdp/startwm.sh; then
+    echo "test -x /usr/bin/startxfce4 && exec /usr/bin/startxfce4" | sudo tee -a /etc/xrdp/startwm.sh
+    echo "exec /bin/sh /usr/bin/startxfce4" | sudo tee -a /etc/xrdp/startwm.sh
+fi
 
 # enable xrdp
 sudo systemctl enable xrdp

@@ -12,7 +12,7 @@ if [ ! -x "$(command -v java)" ]; then
     sudo apt-get update
 
     # install java
-    sudo apt-get -y install openjdk-11-jdk
+    sudo apt-get -y install openjdk-21-jdk
 
     # add JAVA_HOME
     echo >> /home/$USER/.bashrc

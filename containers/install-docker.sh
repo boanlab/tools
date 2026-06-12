@@ -16,6 +16,7 @@ sudo apt-get install -y curl
 # add GPG key
 sudo apt-get install -y ca-certificates gnupg
 sudo install -m 0755 -d /etc/apt/keyrings
+sudo rm -f /etc/apt/keyrings/docker.gpg
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 sudo chmod a+r /etc/apt/keyrings/docker.gpg
 
@@ -31,17 +32,8 @@ sudo apt-get update
 # make sure we install Docker from the Docker repo
 sudo apt-cache policy docker-ce
 
-# install Docker (the oldest version among the versions that Ubuntu supports)
-case "$VERSION" in
-"18."*)
-    sudo apt-get install -y docker-ce=5:18.09.1~3-0~ubuntu-bionic docker-ce-cli=5:18.09.1~3-0~ubuntu-bionic;;
-"20.04"*)
-    sudo apt-get install -y docker-ce=5:19.03.9~3-0~ubuntu-focal;;
-"22.04"*)
-    sudo apt-get install -y docker-ce=5:20.10.13~3-0~ubuntu-jammy;;
-*)
-    sudo apt-get install -y docker-ce;;
-esac
+# install Docker (latest stable) and the compose/buildx plugins
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # configure daemon.json
 sudo mkdir -p /etc/docker
@@ -60,12 +52,9 @@ EOF
 sudo systemctl restart docker
 sleep 1
 
-# add user to docker
+# add user to docker group (effective after re-login)
 sudo usermod -aG docker $USER
 
-# bypass to run docker command
-sudo chmod 666 /var/run/docker.sock
-
-# install docker-compose
-sudo curl -sL https://github.com/docker/compose/releases/download/2.24.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
+echo ">> Note <<"
+echo "Log out and back in (or run 'newgrp docker') for the docker group to take effect."
+echo "Use 'docker compose ...' (compose v2 plugin) instead of the legacy 'docker-compose' binary."

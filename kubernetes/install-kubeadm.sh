@@ -1,56 +1,81 @@
 #!/bin/bash
 
-if [ "$RUNTIME" == "" ]; then
-    if [ -S /var/run/containerd/containerd.sock ]; then
-        RUNTIME="containerd"
+. /etc/os-release
 
-    elif [ -S /var/run/docker.sock ]; then
-        RUNTIME="docker"
+if [ "$NAME" != "Ubuntu" ]; then
+    echo "This script is for Ubuntu."
+    exit
+fi
 
-    else # default
-        echo "Container Runtime is not detected."
-        echo
-        echo "To install Containerd, run '../containers/install-containerd.sh'."
-        echo "To install Docker, run '../containers/install-docker.sh'."
-        echo
-        echo "Note that Kubernetes v1.23.0 would be installed if Docker is installed."
-        echo "Otherwise, the latest version of Kubernetes would be installed."
-        exit
-    fi
+# check container runtime
+if [ ! -S /var/run/containerd/containerd.sock ]; then
+    echo "containerd is not detected."
+    echo "To install containerd, run '../containers/install-containerd.sh'."
+    exit 1
 fi
 
 # update repo
 sudo apt-get update
 
-# install curl
-sudo apt-get install -y curl
+# install prerequisites
+sudo apt-get install -y curl ca-certificates apt-transport-https gpg
 
-# install apt-transport-https
-sudo apt-get install -y apt-transport-https ca-certificates gpg
+# resolve version
+# usage: VERSION=1.33        ./install-kubeadm.sh   (latest patch on 1.33)
+#        VERSION=1.33.0      ./install-kubeadm.sh   (specific patch)
+#        VERSION=1.33.2-1.1  ./install-kubeadm.sh   (specific deb revision)
+#        (no VERSION)        ./install-kubeadm.sh   (latest stable)
+if [ -z "$VERSION" ]; then
+    LATEST=$(curl -L -s https://dl.k8s.io/release/stable.txt | sed 's/^v//')
+    if [ -z "$LATEST" ]; then
+        echo "Failed to fetch the latest Kubernetes version."
+        exit 1
+    fi
+    MINOR=$(echo "$LATEST" | cut -d. -f1,2)
+    PKG_SPEC=""
+    echo "Installing the latest Kubernetes (v$LATEST)."
+else
+    CLEAN=$(echo "$VERSION" | sed 's/^v//')
+    MINOR=$(echo "$CLEAN" | cut -d. -f1,2)
+    # if user only gave minor (e.g. 1.33), let apt pick the latest patch
+    if [ "$CLEAN" = "$MINOR" ]; then
+        PKG_SPEC=""
+        echo "Installing the latest patch of Kubernetes v$MINOR."
+    else
+        # append default deb revision if missing
+        if echo "$CLEAN" | grep -q -- '-'; then
+            DEB_VERSION="$CLEAN"
+        else
+            DEB_VERSION="${CLEAN}-1.1"
+        fi
+        PKG_SPEC="=$DEB_VERSION"
+        echo "Installing Kubernetes v$CLEAN."
+    fi
+fi
 
-# add the key for kubernetes repo
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+# add the key for the kubernetes repo
+sudo mkdir -p /etc/apt/keyrings
+sudo rm -f /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+curl -fsSL "https://pkgs.k8s.io/core:/stable:/v${MINOR}/deb/Release.key" \
+    | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
 # add sources.list.d
-echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v${MINOR}/deb/ /" \
+    | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
 # update repo
 sudo apt-get update
 
 # install kubernetes
-if [ "$RUNTIME" == "docker" ]; then
-    # install a specific version (v1.23.0)
-    sudo apt-get install -y kubeadm=1.23.0-00 kubelet=1.23.0-00 kubectl=1.23.0-00
+sudo apt-get install -y "kubeadm${PKG_SPEC}" "kubelet${PKG_SPEC}" "kubectl${PKG_SPEC}"
 
-    # exclude kubernetes packages from updates
-    sudo apt-mark hold kubeadm kubelet kubectl
-else # otherwise
-    # install the latest version
-    sudo apt-get install -y kubeadm kubelet kubectl
-fi
+# exclude kubernetes packages from updates
+sudo apt-mark hold kubeadm kubelet kubectl
 
 # mount bpffs (for cilium)
-echo "bpffs                                     /sys/fs/bpf     bpf     defaults          0       0" | sudo tee -a /etc/fstab
+if ! grep -q "^bpffs" /etc/fstab; then
+    echo "bpffs                                     /sys/fs/bpf     bpf     defaults          0       0" | sudo tee -a /etc/fstab
+fi
 
 # enable ip forwarding
 if [ $(cat /proc/sys/net/ipv4/ip_forward) == 0 ]; then
@@ -72,4 +97,4 @@ if [ ! -f /etc/sysctl.d/99-override_cilium_rp_filter.conf ]; then
 fi
 
 echo ">> Next Step <<"
-echo "To initialize Kubernetes, run '(MULTI=true) ./initialize-kubeadm.sh"
+echo "To initialize Kubernetes, run '(MULTI=true) ./initialize-kubeadm.sh'"

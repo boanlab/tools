@@ -2,13 +2,11 @@
 
 MULTI="false"
 
-# check if MULTI is correct
 if [ "$MULTI" != "true" ] && [ "$MULTI" != "false" ]; then
     echo "Need to use either 'MULTI=true' or 'MULTI=false'"
     exit
 fi
 
-# check if k8s_init.log exists
 if [ -f ~/k8s_init.log ]; then
     echo "Already tried to initialize kubeadm"
     exit
@@ -25,7 +23,7 @@ if [ $(cat /proc/sys/net/bridge/bridge-nf-call-iptables) == 0 ]; then
     sudo bash -c "echo 'net.bridge.bridge-nf-call-iptables=1' >> /etc/sysctl.conf"
 fi
 
-# initialize the master node
+# initialize the control plane
 sudo kubeadm init --pod-network-cidr=10.244.0.0/16 | tee -a ~/k8s_init.log
 if [ $? != 0 ]; then
     echo "Failed to initialize kubeadm"
@@ -41,18 +39,12 @@ if [ ! -f $HOME/.kube/config ]; then
     echo "export KUBECONFIG=$HOME/.kube/config" | tee -a ~/.bashrc
 fi
 
-# disable master isolation (due to the lack of resources)
+# remove the control-plane taint so pods can schedule on a single-node cluster
 if [ "$MULTI" != "true" ]; then
-    # multi-node case
-    kubectl taint nodes --all node-role.kubernetes.io/master-
-
-    # single-node case
     kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 fi
 
-# sudo kubeadm token create --print-join-command
-
 echo ">> Next Step <<"
 echo "To deploy a CNI, run 'CNI={flannel|calico|cilium} ./deploy-cni.sh'."
-echo "If you see the error 'bridge-nf-call-iptables does not exist' when executing 'kubectl join' on worker nodes,"
-echo "you can first run './enable-bridge-nf-call-iptables.sh' on worker nodes to fix this error."
+echo "If worker nodes fail 'kubeadm join' with 'bridge-nf-call-iptables does not exist',"
+echo "run './enable-bridge-nf-call-iptables.sh' on those nodes first."
